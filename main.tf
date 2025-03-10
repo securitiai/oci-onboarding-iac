@@ -1,5 +1,5 @@
 locals {
-  version = "0.0.2"
+  version          = "0.0.2"
   compartment_ocid = var.tenancy_ocid
 }
 
@@ -12,7 +12,7 @@ resource "random_id" "user_id" {
 }
 
 resource "random_id" "config_file_id" {
-	byte_length = 8
+  byte_length = 8
 }
 
 resource "null_resource" "notify_login" {
@@ -42,7 +42,7 @@ CURL
 }
 
 data "local_file" "public_key" {
-  filename = "/tmp/${random_id.config_file_id.hex}.txt"
+  filename   = "/tmp/${random_id.config_file_id.hex}.txt"
   depends_on = [null_resource.get_config]
 }
 
@@ -87,7 +87,7 @@ resource "oci_identity_policy" "securiti_user_policy" {
 }
 
 resource "time_sleep" "wait_for_creds_to_be_ready" {
-  depends_on = [null_resource.notify_login, oci_identity_policy.securiti_user_policy]
+  depends_on      = [null_resource.notify_login, oci_identity_policy.securiti_user_policy]
   create_duration = "300s"
 }
 
@@ -100,7 +100,7 @@ resource "null_resource" "notify_call" {
     command = <<CURL
 curl -b /tmp/${random_id.cookie_jar_id.hex}.jar --request POST '${var.securiti_endpoint}/privaci/v1/admin/xpod/auth_ready' \
   --header 'Content-Type: application/json' \
-  --data '${jsonencode({ "connector_id": var.connector_id, "token": var.securiti_token, "uid" : oci_identity_user.securiti_user.id, "tid" : var.tenancy_ocid, "fingerprint" : oci_identity_api_key.api_key.fingerprint, "cloud_type" : "oci", "region": var.region })}'
+  --data '${jsonencode({ "connector_id" : var.connector_id, "token" : var.securiti_token, "uid" : oci_identity_user.securiti_user.id, "tid" : var.tenancy_ocid, "fingerprint" : oci_identity_api_key.api_key.fingerprint, "cloud_type" : "oci", "region" : var.region })}'
 CURL
   }
 
