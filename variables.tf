@@ -1,5 +1,6 @@
 variable "securiti_token" {
   description = "Token to update pod IP."
+  sensitive   = true
 }
 
 variable "securiti_endpoint" {
